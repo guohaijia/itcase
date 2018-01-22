@@ -37,14 +37,28 @@
     width="180"
     label="电话">
   </el-table-column>
+  <!-- 点击按钮的时候触发事件 先去引用的文档那寻找，如果找不到的话就在自己进行绑定 -->
   <el-table-column
     prop="mg_state"
     width="180"
     label="用户状态">
+    <template slot-scope="scope">
+        <!-- <div>{{scope.row.mg_state}}</div> -->
+        <!-- 根据作用域插槽，我们模仿别人写的额，我们要根据我们的情况进行调整 我们要显示的是状态 是true还是false,就可以进行控制开合关 -->
+        <el-switch  @change='toggleUser(scope.row)'
+          v-model="scope.row.mg_state">
+        </el-switch>
+    </template>
   </el-table-column>
   <el-table-column
     width="280"
     label="操作">
+    <template slot-scope="scope">
+        <el-button size="small" type="primary" icon="el-icon-edit"></el-button>
+        <el-button size="small" type="danger" icon="el-icon-delete"></el-button>
+        <el-button size="small" type="warning" icon="el-icon-check"></el-button>
+    </template>
+
   </el-table-column>
 </el-table>
 <el-pagination
@@ -59,7 +73,7 @@
 </div>
 </template>
 <script>
-import {getUsersData} from '../../api/api.js'
+import {getUsersData, toggleUserState} from '../../api/api.js'
 export default {
   data () {
     return {
@@ -71,6 +85,22 @@ export default {
     }
   },
   methods: {
+    // 控制用户的开关
+    toggleUser (data) {
+      // 进行接口的调用
+      toggleUserState({
+        uId: data.id, // 用户的id
+        state: data.mg_state // 用户当前状态
+      }).then(res => {
+        if (res.meta.status === 200) {
+          // 操作成功(提示信息)
+          this.$message({
+            message: res.meta.msg,
+            type: 'success'
+          })
+        }
+      })
+    },
     handleSizeChange (val) {
     // 改变每页的条数
       this.pagesize = val

@@ -35,3 +35,11 @@ export const getUsersData = (params) => {
     return res.data
   })
 }
+// 用户的管理（状态的改变）put 经常用于修改的逻辑
+export const toggleUserState = (params) => {
+  console.log(params)
+  return axios.put('users/ ' + params.uId + '/state/' + params.state).then(res => {
+    console.log(res.data)
+    return res.data
+  })
+}
