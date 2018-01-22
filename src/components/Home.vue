@@ -2,8 +2,9 @@
   <el-container>
     <el-aside :style='{width:"auto"}'>
       <div class="logo"></div>
+      <!-- 下面使用的是组件导航菜单 -->
       <el-menu
-        router:
+        router
         :collapse="isCollapse"
         :unique-opened="true"
         default-active="2"
@@ -18,6 +19,7 @@
             <i class="el-icon-location"></i>
             <span slot="title">用户管理</span>
           </template>
+          <!-- index 是唯一的标识 相当于路由中的router-link -->
           <el-menu-item index="/users">
             <i class="el-icon-menu"></i>
             <span>用户列表</span>
@@ -93,7 +95,8 @@
   </el-container>
 </template>
 <script>
-import {testData} from '../api/api.js'
+//  里面有真是的内容，不需要在进行测试了
+// import {testData} from '../api/api.js'
 export default {
   name: '',
   data () {
@@ -119,19 +122,6 @@ export default {
     handleClose (key, keyPath) {
       console.log(key, keyPath)
     }
-  },
-  //  相当于mounted :fucntion(){}
-  //  这里面只不过只是使用了语法糖 把：省略了，把函数写成了 箭头函数的而形式
-  //  mounted 是当函数挂载之后去执行的 ，渲染主页的内容
-  mounted () {
-  // 调用接口 进行渲染
-    testData({
-      query: '',
-      pagenum: 1,
-      pagesize: 10
-    }).then(res => {
-      console.log(res)
-    })
   }
 }
 

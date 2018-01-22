@@ -23,8 +23,14 @@ export const login = (params) => {
     return res.data
   })
 }
-// 测试的功能 (测试的请求头)
-export const testData = (params) => {
+// 测试的功能 (测试的请求头) 用户列表数据
+// export const getUsersData = (params) => {
+//   return axios.get('users', {params: params}).then(res => {
+//     console.log(res)
+//     return res.data
+//   })
+// }
+export const getUsersData = (params) => {
   return axios.get('users', {params: params}).then(res => {
     return res.data
   })
