@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Login from '@/components/Login'
 import Home from '@/components/Home'
+import Welcome from '@/components/Welcome'
 // 启用路由
 Vue.use(Router)
 
@@ -15,7 +16,11 @@ export default new Router({
     {
       path: '/home',
       name: 'home',
-      component: Home
+      component: Home,
+      redirect: '/Welcome', // 重定向到子路由
+      children: [
+        {path: '/Welcome', component: Welcome}
+      ]
     }
   ]
 })

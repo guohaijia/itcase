@@ -11,6 +11,15 @@ export default {
 </script>
 
 <style>
+  html,body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+  }
+  /*给页面样式设置高度*/
+  #app {
+    height: 100%;
+  }
 /*这里面的是全部都可以访问的到的*/
 @font-face {
   font-family: 'icomoon';
@@ -47,4 +56,7 @@ export default {
   font-size:20px;
   line-height:40px;
 }
+.icon-menu:before {
+    content: "\e9bd";
+  }
 </style>
