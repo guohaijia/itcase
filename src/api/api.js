@@ -43,3 +43,27 @@ export const toggleUserState = (params) => {
     return res.data
   })
 }
+// 添加用户的接口
+export const addUser = (params) => {
+  return axios.post('users', params).then(res => {
+    return res.data
+  })
+}
+// 根据id 查询用户的信息
+export const getUserId = (params) => {
+  return axios.get('users/' + params.id).then(res => {
+    return res.data
+  })
+}
+// 编辑提交数据
+export const editUser = (params) => {
+  return axios.put('users/' + params.id, params).then(res => {
+    return res.data
+  })
+}
+// 删除用户的数据
+export const delectUser = (params) => {
+  return axios.delete('users/' + params.id, params).then(res => {
+    return res.data
+  })
+}

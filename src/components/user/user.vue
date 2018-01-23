@@ -9,10 +9,10 @@
     </el-breadcrumb>
     </el-col>
 </el-row>
-<el-input placeholder="请输入内容"  class="search">
-    <el-button slot="append" icon="el-icon-search"></el-button>
+<el-input  v-model='query' placeholder="请输入内容"  class="search">
+    <el-button  @click='queryHandler' slot="append" icon="el-icon-search"></el-button>
 </el-input>
-<el-button type="success" plain>成功按钮</el-button>
+<el-button type="success" plain @click='dialogVisible4add= true'>添加用户</el-button>
 <el-table
   border
   :data="tableData"
@@ -54,13 +54,14 @@
     width="280"
     label="操作">
     <template slot-scope="scope">
-        <el-button size="small" type="primary" icon="el-icon-edit"></el-button>
-        <el-button size="small" type="danger" icon="el-icon-delete"></el-button>
+        <el-button size="small" type="primary" icon="el-icon-edit" @click='editHandler(scope.row)'></el-button>
+        <el-button size="small" type="danger" icon="el-icon-delete" @click='delectHandler(scope.row)'></el-button>
         <el-button size="small" type="warning" icon="el-icon-check"></el-button>
     </template>
 
   </el-table-column>
 </el-table>
+<!--利用element实现分页  -->
 <el-pagination
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
@@ -70,10 +71,59 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="total">
 </el-pagination>
+<!-- 添加用户的弹窗 -->
+<el-dialog
+  title="添加用户"
+  :visible="dialogVisible4add"
+  @close='closeUserDialog("add")'
+  width="50%"
+  >
+  <el-form :model="user" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+  <el-form-item label="用户名" prop="username">
+    <el-input v-model="user.username"></el-input>
+  </el-form-item>
+  <el-form-item label="密码" prop="password" >
+    <el-input type="password" v-model="user.password"></el-input>
+  </el-form-item>
+  <el-form-item label="邮箱" prop="email" >
+    <el-input v-model="user.email"></el-input>
+  </el-form-item>
+  <el-form-item label="电话" prop="mobile">
+    <el-input v-model="user.mobile"></el-input>
+  </el-form-item>
+</el-form>
+  <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible4add = false">取 消</el-button>
+    <el-button type="primary" @click="submitUser">确 定</el-button>
+  </span>
+</el-dialog>
+<!--编辑的操作的弹窗 -->
+<el-dialog
+  title="编辑用户"
+  :visible="dialogVisible4edit"
+  @close='closeUserDialog("role")'
+  width="50%"
+  >
+  <el-form :model="euser" :rules="rules" ref="ruleFormedit" label-width="100px" class="demo-ruleForm">
+  <el-form-item label="用户名" prop="username">
+    <el-button plain type="info">{{euser.username}}</el-button>
+  </el-form-item>
+  <el-form-item label="邮箱" prop="email" >
+    <el-input v-model="euser.email"></el-input>
+  </el-form-item>
+  <el-form-item label="电话" prop="mobile">
+    <el-input v-model="euser.mobile"></el-input>
+  </el-form-item>
+</el-form>
+  <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible4edit = false">取 消</el-button>
+    <el-button type="primary" @click="submitEdite">确 定</el-button>
+  </span>
+</el-dialog>
 </div>
 </template>
 <script>
-import {getUsersData, toggleUserState} from '../../api/api.js'
+import {getUsersData, toggleUserState, addUser, getUserId, editUser, delectUser} from '../../api/api.js'
 export default {
   data () {
     return {
@@ -81,10 +131,124 @@ export default {
       currentPage: 1, // 当前页码
       pagesize: 3, // 每页显示条数
       total: 0, // 数据总条数
-      tableData: [] // 实际的表格列表数据
+      tableData: [], // 实际的表格列表数据
+      dialogVisible4add: false,
+      dialogVisible4edit: false,
+      user: {
+        username: '',
+        password: '',
+        eamil: '',
+        mobile: ''
+      },
+      euser: {
+        username: '',
+        eamil: '',
+        mobile: ''
+      },
+      rules: {
+        username: [
+          { required: true, message: '请输入用户名', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' }
+        ],
+        email: [
+          { required: true, message: '请输入邮箱', trigger: 'blur' }
+        ],
+        mobile: [
+          { required: true, message: '请输入手机', trigger: 'blur' }
+        ]
+      }
     }
   },
   methods: {
+    //  实现删除的功能
+    delectHandler (row) {
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 调用接口
+        delectUser({id: row.id}).then(res => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+          // 刷新列表
+          this.initList()
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    //  实现用户的编辑模式，修改数据导出数据库
+    submitEdite () {
+      // form 表单要警醒验证
+      this.$refs['ruleFormedit'].validate((valid) => {
+        if (valid) {
+          // 通过验证，调用接口
+          editUser(this.euser).then(res => {
+            console.log(res)
+            if (res.meta.status === 200) {
+              // 关闭窗口
+              this.dialogVisible4edit = false
+              // 刷新页面
+              this.initList()
+            }
+          })
+        }
+      })
+    },
+    editHandler (row) {
+      console.log(row)
+      // 编辑需要两部才能实现，1查出当前的数据，2.提交导数据库
+      // 实现编辑的查出当前的数据
+      getUserId({id: row.id}).then(res => {
+        console.log(res)
+        if (res.meta.status === 200) {
+          // 填充表单
+          this.euser.id = res.data.id
+          this.euser.username = res.data.username
+          this.euser.email = res.data.email
+          this.euser.mobile = res.data.mobile
+          // 显示显示弹框
+          this.dialogVisible4edit = true
+        }
+      })
+    },
+    // X的退出
+    closeUserDialog (flag) {
+      if (flag === 'add') {
+        this.dialogVisible4add = false
+      } else if (flag === 'edit') {
+        this.dialogVisible4edit = false
+      }
+    },
+    //  实现添加的功能
+    submitUser () {
+      // form 表单要警醒验证
+      this.$refs['ruleForm'].validate((valid) => {
+        if (valid) {
+          // 通过验证，调用接口
+          addUser(this.user).then(res => {
+            if (res.meta.status === 201) {
+              // 关闭弹窗
+              this.dialogVisible4add = false
+              // 刷新列表
+              this.initList()
+            }
+          })
+        }
+      })
+    },
+    // 关键字搜索 的主要的思想就是利用v-model 双向绑定当点击搜索的时候，触发事件就直接返回渲染的数据即可，就实现了搜索的功能
+    queryHandler () {
+      this.initList()
+    },
     // 控制用户的开关
     toggleUser (data) {
       // 进行接口的调用
