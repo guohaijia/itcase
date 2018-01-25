@@ -56,7 +56,7 @@
     <template slot-scope="scope">
         <el-button size="small" type="primary" icon="el-icon-edit" @click='editHandler(scope.row)'></el-button>
         <el-button size="small" type="danger" icon="el-icon-delete" @click='delectHandler(scope.row)'></el-button>
-        <el-button size="small" type="warning" icon="el-icon-check"></el-button>
+        <el-button size="small" type="warning" icon="el-icon-check" @click='giveRole(scope.row)'></el-button>
     </template>
 
   </el-table-column>
@@ -120,6 +120,29 @@
     <el-button type="primary" @click="submitEdite">确 定</el-button>
   </span>
 </el-dialog>
+<!-- 授权的弹窗 -->
+<el-dialog
+  title="分配角色"
+  :visible="dialogVisible4Role"
+  @close='closeUserDialog("role")'
+  width="50%"
+  >
+  <div>
+    <span>当前用户：</span> <span>{{usersname}}</span><br>
+    <span>请选择角色：</span><el-select v-model="value" placeholder="请选择">
+    <el-option
+      v-for="item in roleList"
+      :key="item.id"
+      :label="item.label"
+      :value="item.value">
+    </el-option>
+  </el-select>
+  </div>
+  <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible4Role = false">取 消</el-button>
+    <el-button type="primary" @click="submitRole">确 定</el-button>
+  </span>
+</el-dialog>
 </div>
 </template>
 <script>
@@ -127,6 +150,10 @@ import {getUsersData, toggleUserState, addUser, getUserId, editUser, delectUser}
 export default {
   data () {
     return {
+      roleList: {
+        value: 'id',
+        label: 'authName'
+      },
       query: '',
       currentPage: 1, // 当前页码
       pagesize: 3, // 每页显示条数
@@ -134,6 +161,7 @@ export default {
       tableData: [], // 实际的表格列表数据
       dialogVisible4add: false,
       dialogVisible4edit: false,
+      dialogVisible4Role: false,
       user: {
         username: '',
         password: '',
@@ -162,6 +190,15 @@ export default {
     }
   },
   methods: {
+    //  提交角色
+    submitRole () {
+      console.log(1)
+    },
+    //  分配角色
+    giveRole (row) {
+      console.log(row)
+      this.dialogVisible4Role = true
+    },
     //  实现删除的功能
     delectHandler (row) {
       this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
@@ -225,6 +262,8 @@ export default {
       if (flag === 'add') {
         this.dialogVisible4add = false
       } else if (flag === 'edit') {
+        this.dialogVisible4edit = false
+      } else if (flag === 'role') {
         this.dialogVisible4edit = false
       }
     },
