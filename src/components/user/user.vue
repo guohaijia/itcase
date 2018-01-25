@@ -292,7 +292,7 @@ export default {
       } else if (flag === 'edit') {
         this.dialogVisible4edit = false
       } else if (flag === 'role') {
-        this.dialogVisible4edit = false
+        this.dialogVisible4Role = false
       }
     },
     //  实现添加的功能
