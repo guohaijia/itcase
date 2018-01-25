@@ -37,6 +37,11 @@
     width="180"
     label="电话">
   </el-table-column>
+  <el-table-column
+    prop="role_name"
+    width="180"
+    label="角色">
+  </el-table-column>
   <!-- 点击按钮的时候触发事件 先去引用的文档那寻找，如果找不到的话就在自己进行绑定 -->
   <el-table-column
     prop="mg_state"
@@ -128,13 +133,13 @@
   width="50%"
   >
   <div>
-    <span>当前用户：</span> <span>{{usersname}}</span><br>
-    <span>请选择角色：</span><el-select v-model="value" placeholder="请选择">
+    <span>当前用户：</span> <span>{{currentUser.username}}</span><br>
+    <span>请选择角色：</span><el-select v-model="currentRole" placeholder="请选择">
     <el-option
       v-for="item in roleList"
       :key="item.id"
-      :label="item.label"
-      :value="item.value">
+      :label="item.roleName"
+      :value="item.id">
     </el-option>
   </el-select>
   </div>
@@ -146,14 +151,13 @@
 </div>
 </template>
 <script>
-import {getUsersData, toggleUserState, addUser, getUserId, editUser, delectUser} from '../../api/api.js'
+import {getUsersData, toggleUserState, addUser, getUserId, editUser, delectUser, getRolesList, submitRoles} from '../../api/api.js'
 export default {
   data () {
     return {
-      roleList: {
-        value: 'id',
-        label: 'authName'
-      },
+      roleList: [],
+      currentUser: {},
+      currentRole: '',
       query: '',
       currentPage: 1, // 当前页码
       pagesize: 3, // 每页显示条数
@@ -192,11 +196,35 @@ export default {
   methods: {
     //  提交角色
     submitRole () {
-      console.log(1)
+      // 调用接口
+      submitRoles({id: this.currentUser.id, rid: this.currentRole}).then(res => {
+        // console.log(res)
+        if (res.meta.status === 200) {
+          //  关闭弹窗
+          this.dialogVisible4Role = false
+          // 刷新列表
+          this.initList()
+          //  给个提示信息
+          this.$message({
+            type: 'success',
+            message: res.meta.msg
+          })
+        }
+      })
     },
     //  分配角色
     giveRole (row) {
+      // 设置当前的用户
+      this.currentUser = row
       console.log(row)
+      // 获取下拉的资源（roleList)
+      getRolesList().then(res => {
+        // console.log(res)
+        if (res.meta.status === 200) {
+          this.roleList = res.data
+        }
+      })
+      // 显示弹窗
       this.dialogVisible4Role = true
     },
     //  实现删除的功能

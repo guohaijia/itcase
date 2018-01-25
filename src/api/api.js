@@ -91,3 +91,9 @@ export const giveRoles = (params) => {
     return res.data
   })
 }
+// 用户的分配角色的请求
+export const submitRoles = (params) => {
+  return axios.put('users/' + params.id + '/role', params).then(res => {
+    return res.data
+  })
+}
