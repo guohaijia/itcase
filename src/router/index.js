@@ -4,6 +4,8 @@ import Login from '@/components/Login'
 import Home from '@/components/Home'
 import Welcome from '@/components/Welcome'
 import user from '@/components/user/user'
+import right from '@/components/right/Right'
+import roles from '@/components/right/Role'
 // 启用路由
 Vue.use(Router)
 export default new Router({
@@ -21,7 +23,9 @@ export default new Router({
       redirect: '/Welcome', // 重定向到子路由
       children: [
         {path: '/Welcome', component: Welcome},
-        {path: '/users', component: user}
+        {path: '/users', component: user},
+        {path: '/auths', component: right},
+        {path: '/roles', component: roles}
       ]
     }
   ]
