@@ -6,6 +6,7 @@ import Welcome from '@/components/Welcome'
 import user from '@/components/user/user'
 import right from '@/components/right/Right'
 import roles from '@/components/right/Role'
+import categories from '@/components/product/categories'
 // 启用路由
 Vue.use(Router)
 export default new Router({
@@ -24,8 +25,11 @@ export default new Router({
       children: [
         {path: '/Welcome', component: Welcome},
         {path: '/users', component: user},
-        {path: '/auths', component: right},
-        {path: '/roles', component: roles}
+        //  name 是可以找到先找到名字的代码
+        // {path: '/auths', component: right, name: 'right'},
+        {path: '/roles', component: roles},
+        {path: '/rights', component: right, name: 'right'},
+        {path: '/categories', component: categories}
       ]
     }
   ]

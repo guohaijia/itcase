@@ -97,3 +97,9 @@ export const submitRoles = (params) => {
     return res.data
   })
 }
+//  左侧菜单的权限
+export const getMenus = (params) => {
+  return axios.get('menus').then(res => {
+    return res.data
+  })
+}

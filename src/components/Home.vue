@@ -14,13 +14,27 @@
         background-color="#545c64"
         text-color="#fff"
         active-text-color="#ffd04b">
-        <el-submenu index="1">
+        <el-submenu v-for='item in menu' :key='item.id' :index='item.path' >
+          <template slot="title">
+            <i class="el-icon-location"></i>
+            <span slot="title">{{item.authName}}</span>
+          </template>
+          <!-- 左侧导航栏 -->
+          <!-- index 是唯一的标识 相当于路由中的router-link -->
+          <!-- 遍历要知道遍历的是哪一个-->
+          <el-menu-item :index='submenus.path' v-for='submenus in item.children' :key='submenus.id'>
+            <i class="el-icon-menu"></i>
+            <span>{{submenus.authName}}</span>
+          </el-menu-item>
+        </el-submenu>
+        <!-- 静态的网页 -->
+        <!-- <el-submenu index="1">
           <template slot="title">
             <i class="el-icon-location"></i>
             <span slot="title">用户管理</span>
-          </template>
+          </template> -->
           <!-- index 是唯一的标识 相当于路由中的router-link -->
-          <el-menu-item index="/users">
+          <!-- <el-menu-item index="/users">
             <i class="el-icon-menu"></i>
             <span>用户列表</span>
           </el-menu-item>
@@ -76,7 +90,7 @@
             <i class="el-icon-menu"></i>
             <span slot="title">数据报表</span>
           </el-menu-item>
-        </el-submenu>
+        </el-submenu> -->
       </el-menu>
     </el-aside>
   <el-container>
@@ -95,13 +109,15 @@
   </el-container>
 </template>
 <script>
+import {getMenus} from '../api/api.js'
 //  里面有真是的内容，不需要在进行测试了
 // import {testData} from '../api/api.js'
 export default {
   name: '',
   data () {
     return {
-      isCollapse: false
+      isCollapse: false,
+      menu: {}
     }
   },
   methods: {
@@ -122,6 +138,14 @@ export default {
     handleClose (key, keyPath) {
       console.log(key, keyPath)
     }
+  },
+  mounted () {
+    getMenus().then(res => {
+      console.log(res)
+      if (res.meta.status === 200) {
+        this.menu = res.data
+      }
+    })
   }
 }
 
